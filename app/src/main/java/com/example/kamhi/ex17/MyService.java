@@ -5,6 +5,7 @@ import android.content.Intent;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import android.os.Binder;
 import android.os.IBinder;
 
 /**
@@ -18,23 +19,28 @@ public class MyService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return new MyBinder();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         myWorker = new Worker();
-        myWorker.start();;
+        myWorker.start();
+        ;
         return super.onStartCommand(intent, flags, startId);
     }
 
-    private class Worker extends Thread{
+    public String getHello() {
+        return "Hello Service";
+    }
+
+    private class Worker extends Thread {
 
         @Override
         public void run() {
             super.run();
             SimpleDateFormat fmt = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");
-            while (true){
+            while (true) {
                 date = new Date();
                 try {
                     Thread.sleep(1000);
@@ -44,4 +50,12 @@ public class MyService extends Service {
             }
         }
     }
-}
+
+        public class MyBinder extends Binder {
+
+            public MyService getService() {
+                return MyService.this;
+            }
+        }
+    }
+

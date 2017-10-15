@@ -2,13 +2,19 @@ package com.example.kamhi.ex17;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.widget.CompoundButton;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 public class MainActivity extends Activity {
+
+    private MyService myService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +38,20 @@ public class MainActivity extends Activity {
                 else{
                     stopService(intent);
                 }
+                bindService(intent,
+                        new ServiceConnection() {
+                            @Override
+                            public void onServiceConnected(ComponentName name, IBinder iBinder) {
+                                myService = ((MyService.MyBinder)iBinder).getService();
+                                Toast.makeText(MainActivity.this, myService.getHello(),Toast.LENGTH_LONG).show();
+                            }
+
+                            @Override
+                            public void onServiceDisconnected(ComponentName name) {
+
+                            }
+                        },
+                        Context.BIND_AUTO_CREATE);
             }
         });
     }
