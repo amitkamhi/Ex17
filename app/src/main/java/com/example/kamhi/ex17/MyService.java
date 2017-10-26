@@ -16,6 +16,8 @@ public class MyService extends Service {
 
     Worker myWorker;
     Date date;
+    MyNotification notif;
+    SimpleDateFormat fmt;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -24,24 +26,41 @@ public class MyService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        fmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         myWorker = new Worker();
         myWorker.start();
         ;
         return super.onStartCommand(intent, flags, startId);
     }
 
-    public String getHello() {
+    /*public String getHello() {
         return "Hello Service";
+    }*/
+
+    public String getCurrentTimeStamp(){
+        return fmt.format(this.date);
+    }
+
+    public void showNotification(){
+        this.notif = new MyNotification(this);
+    }
+
+    public void hideNotification(){
+        if(this.notif!=null){
+            this.notif.stop(MyNotification.NOTIF1);
+            this.notif = null;
+        }
     }
 
     private class Worker extends Thread {
-
         @Override
         public void run() {
             super.run();
-            SimpleDateFormat fmt = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");
             while (true) {
                 date = new Date();
+                if (notif!=null){
+                    notif.update(MyNotification.NOTIF1, getCurrentTimeStamp());
+                }
                 try {
                     Thread.sleep(1000);
                 } catch (Exception e) {
@@ -52,7 +71,6 @@ public class MyService extends Service {
     }
 
         public class MyBinder extends Binder {
-
             public MyService getService() {
                 return MyService.this;
             }
